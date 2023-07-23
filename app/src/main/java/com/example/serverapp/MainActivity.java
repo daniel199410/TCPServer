@@ -40,12 +40,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Thread thread1 = new Thread(new Thread1());
         thread1.start();
-        binding.btnSend.setOnClickListener(view -> {
-            message = binding.etMessage.getText().toString().trim();
-            if(!message.isEmpty()) {
-                new Thread(new Thread3(message)).start();
-            }
-        });
     }
 
     private String getLocalIpAddress() throws UnknownHostException {
@@ -57,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
     private PrintWriter output;
     private BufferedReader input;
+    private ServerSocket serverSocket;
     private class Thread1 implements Runnable {
 
         @Override
         public void run() {
             Socket socket;
-            ServerSocket serverSocket;
             try {
                 serverSocket = new ServerSocket(SERVER_PORT);
                 runOnUiThread(() -> {
@@ -89,7 +83,10 @@ public class MainActivity extends AppCompatActivity {
                     final String message = input.readLine();
                     if(message != null) {
                         runOnUiThread(() -> binding.tvMessages.append(getString(R.string.client, message)));
+                        output.write("22EE3453334\n");
+                        output.flush();
                     } else {
+                        serverSocket.close();
                         Thread thread1 = new Thread(new Thread1());
                         thread1.start();
                         return;
