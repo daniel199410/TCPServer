@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     public static String SERVER_IP;
     public static final int SERVER_PORT = 9090;
-    String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     final String message = input.readLine();
                     if(message != null) {
+                        Log.i("Server", message);
                         runOnUiThread(() -> binding.tvMessages.append(getString(R.string.client, message)));
                         output.write("22EE3453334\n");
                         output.flush();
@@ -95,23 +96,6 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-    private class Thread3 implements Runnable {
-        private final String message;
-        public Thread3(String message) {
-            this.message = message;
-        }
-
-        @Override
-        public void run() {
-            output.write(message + "\n");
-            output.flush();
-            runOnUiThread(() -> {
-                binding.tvMessages.append(getString(R.string.server, message));
-                binding.etMessage.setText("");
-            });
         }
     }
 }
